@@ -20,50 +20,94 @@ public class Program1
     private AdjacencyLists adjList;
     private Lab3 lab3; //Creating Lab3 object, this will be used to
                        //intialize the adjacency list
-    private boolean properties[];
+
+    private boolean properties[]; //This array will hold 2 boolean values that represetn
+                                  //if the graph is connected and if it is cyclic.
+    private boolean treeStatus;
+
 
     public Program1(String fileName)
     {
+        treeStatus = false;
         lab3 = new Lab3();
         q = new LinkedList();
-        adjList = lab3.initList(fileName); // Using aLab3 to initialize adjList
-        properties = breadthFirst();
+        adjList = lab3.initList(fileName); // Using Lab3 to initialize adjList
+        properties = breadthFirst(0); // We will pass the breadthFirst method a 0 as the root node. Right now we are trying to determine if it is a tree.
     }
 
-	public boolean[] breadthFirst()
+	public boolean[] breadthFirst(int root)
 	{
-        int node = 0;
+        int depth = 0;
+        int parentNode = 0;
+        int childCount = 0;
+        int depthArray[] = new int[adjList.order()];
+        int childArray[] = new int[adjList.order()];
+        int parentArray[] = new int[adjList.order()];
         boolean visited[] = new boolean[adjList.order()];
-        boolean properties[] = {true, true};
+        boolean properties[] = {true, false}; //This array will hold 2 boolean values that represetn
+                                              //if the graph is connected and if it is cyclic.
+        depthArray[root] = 0;
+        q.add(root); // Add root to the queue
 
-        visited[0] = true;
-
-        q.add(0);
+        
 
         while (q.size() != 0)
         {
-            node = q.remove();
-            System.out.println(node + " ");
+            
+            childCount = 0;  
+            root = q.remove(); // Get node from the queue
 
-            Iterator<Integer> it = adjList.neighborIterator(node);
+            Iterator<Integer> it = adjList.neighborIterator(root);
+           
+            // This loop will visit all children of the vertex
             while(it.hasNext())
             {
+                // This gets the next child of the current vertex
                 int adjNode = it.next();
+               
 
+                // If node (child) hasn't been visited, mark it as visited and put it 
+                // on the queue
                 if (!visited[adjNode])
                 {
-                    visited[adjNode] = true;
+                    childCount += 1; //This node has another child
+                    visited[adjNode] = true; //We mark this node as visited
                     q.add(adjNode);
                 }
+                else
+                {
+                    parentArray[root] = adjNode; // In a tree, the only nodes in our adjacency list will be
+                                                 // the children and the parent. We are marking the only node we have already seen
+                                                 // as the parent.
+                }
+            
             }
+
+            childArray[root] = childCount;
+            depthArray[root] = 1 + depthArray[parentArray[root]];
+            visited[root] = true;
 
         }
 
         // Check if graph is connected
         for (boolean x : visited)
         {
-            //System.out.println(x);
-            if (x == false) properties[0] = false;
+            if (x == false) properties[0] = false; //properties[0] represents if graph is connected
+        }
+
+        // If the graph is a tree, print its properties
+        if (treeStatus)
+        {
+            for (int i = 0; i < adjList.order(); i++)
+            {
+                System.out.println("\n\n-----------");
+                System.out.println("|Vertex: " + i + "|");
+                System.out.println("-----------");
+
+                System.out.print("Parent: " + parentArray[i] + " |");
+                System.out.print(" Depth: " + (depthArray[i] - 1) + " |");
+                System.out.print(" Number of children: " + childArray[i]);
+            }
         }
 
         return properties;
@@ -78,63 +122,45 @@ public class Program1
 
     public boolean isConnect()
     { 
-        System.out.println("Connected: " + properties[0]);
+        //System.out.println("Connected: " + properties[0]);
         return (properties[0]);
     }
 
     public boolean isCyclic()
     {
-        return false;
+        //System.out.println("Cyclic: " + properties[1]);
+
+        return properties[1];
     }
 
     public boolean isTree()
     {
         int properties = 0;
 
+
         if (adjList.order() - adjList.size() == 1) 
         {
+            //System.out.println("Property 1: true");
             properties++;
-        }
+        } 
 
         if (isConnect())
         {
             properties++;
         }
-
+        /**
         if (!isCyclic())
         {
             properties++;
-        }
+        }*/
 
 
-        return properties > 1;
+        if (properties > 1) treeStatus = true;
+        return treeStatus;
     
     }
 
-    /**
-     * Prints out list using AdjacencyLists neighborIterator function.
-     *
-     * @param list The adjacency list we initialized earlier using the input files int pairs.
-     *
-     *
-     */ 
-    public void printList()
-    {
-        Iterator<Integer> it; 
-        
-        for (int i = 0; i < adjList.order(); i++)
-        {
-            it = adjList.neighborIterator(i);
-            System.out.print("\n" + (i) + ": "); // Prints current vertex
-            
-            while (it.hasNext())
-            {
-                System.out.print(it.next() + " "); // Prints edges of current vertex
-            }            
-        }
 
-        System.out.println("\nThere are " + adjList.size() + " edges.");
-    }
 
 
     public static void main(String[] args)
@@ -144,14 +170,18 @@ public class Program1
         Program1 program = new Program1("somegraph.dat");
         Scanner input = new Scanner(System.in);
 
-        program.isTree(); // Print adjacency list
-
         // Asking user for root if adjList is a tree
-        /*if (program.isTree())
+        if (program.isTree())
         {
-	        System.out.println("Please enter the root node:");
+	        System.out.println("\n\nThis graph is a tree. What is the root node?");
 	        int root = input.nextInt();
-	    }*/
+            program.breadthFirst(root);
+	    }
+        else
+        {
+            System.out.println("This program is NOT a tree.");
+
+        }
     }
 
 

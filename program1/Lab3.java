@@ -74,6 +74,35 @@ public class Lab3
         return list;
 
     }
+
+    /**
+     * Prints out list using AdjacencyLists neighborIterator function.
+     *
+     * @param list The adjacency list we initialized earlier using the input files int pairs.
+     *
+     *
+     */ 
+    public void printList(AdjacencyLists list)
+    {
+        Iterator<Integer> it; 
+
+        for (int i = 0; i < list.order(); i++)
+        {
+            it = list.neighborIterator(i);
+            System.out.print("\n" + (i) + ": "); // Prints current vertex
+
+            while (it.hasNext())
+            {
+                System.out.print(it.next() + " "); // Prints edges of current vertex
+
+            }
+
+        }
+
+
+        System.out.println("\nThere are " + list.size() + " edges.");
+
+    }
    
    
 }
