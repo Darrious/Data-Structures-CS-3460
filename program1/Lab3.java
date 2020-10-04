@@ -45,7 +45,7 @@ public class Lab3
 
         catch (Exception e)
         {
-            e.printStackTrace();
+            System.out.println("ERROR: Make sure the file name/path are valid.");
 
         }
 

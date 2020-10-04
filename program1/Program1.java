@@ -44,9 +44,12 @@ public class Program1
         int childArray[] = new int[adjList.order()];
         int parentArray[] = new int[adjList.order()];
         boolean visited[] = new boolean[adjList.order()];
-        boolean properties[] = {true, false}; //This array will hold 2 boolean values that represetn
-                                              //if the graph is connected and if it is cyclic.
-        depthArray[root] = 0;
+        boolean properties[] = {true, false, true}; //This array will hold 2 boolean values that represetn
+                                                    //if the graph is connected and if it is cyclic.
+        boolean colorArray[] = new boolean[adjList.order()];
+
+        depthArray[root] = 0; // The root has depth zero
+        colorArray[root] = true;
         q.add(root); // Add root to the queue
 
         
@@ -70,12 +73,29 @@ public class Program1
                 // on the queue
                 if (!visited[adjNode])
                 {
+                    if (colorArray[root])
+                    {
+                        colorArray[adjNode] = false;
+                    }
+                    else 
+                    {
+                        
+                        colorArray[adjNode] = true;
+                    }
+                    
+                    
+
                     childCount += 1; //This node has another child
                     visited[adjNode] = true; //We mark this node as visited
-                    q.add(adjNode);
+                    q.add(adjNode); // Add node to queue
                 }
                 else
                 {
+                    if(colorArray[root] == colorArray[adjNode])
+                    {
+                            properties[2] = false;
+                    }
+
                     parentArray[root] = adjNode; // In a tree, the only nodes in our adjacency list will be
                                                  // the children and the parent. We are marking the only node we have already seen
                                                  // as the parent.
@@ -83,9 +103,9 @@ public class Program1
             
             }
 
-            childArray[root] = childCount;
-            depthArray[root] = 1 + depthArray[parentArray[root]];
-            visited[root] = true;
+            childArray[root] = childCount; // Store the number of children for this vertex
+            depthArray[root] = 1 + depthArray[parentArray[root]]; // Store depth as one more than parent
+            visited[root] = true; // Mark vertex as visited
 
         }
 
@@ -94,6 +114,27 @@ public class Program1
         {
             if (x == false) properties[0] = false; //properties[0] represents if graph is connected
         }
+
+
+
+        // Displaying colors of each vertex for user
+        if (!treeStatus) // I only have it display before treeStatus is decided because if it is a tree, it ends up printing twice
+                         // since I run my BFS algorithm twice
+        {
+            System.out.println("\n\n---------------");
+            System.out.println("|Vertex Colors|");
+            System.out.println("---------------");
+            int h = 0;
+            for (boolean x : colorArray)
+            {
+                System.out.print("Vertex: " + h + " | ");
+                if (x) System.out.println("Red");
+                else System.out.println("Black");
+
+                h++;
+            }
+        }
+
 
         // If the graph is a tree, print its properties
         if (treeStatus)
@@ -107,6 +148,7 @@ public class Program1
                 System.out.print("Parent: " + parentArray[i] + " |");
                 System.out.print(" Depth: " + (depthArray[i] - 1) + " |");
                 System.out.print(" Number of children: " + childArray[i]);
+
             }
         }
 
@@ -117,13 +159,13 @@ public class Program1
 
     public boolean isTwoColor()
     {
-        return false;
+        return properties[2];
     }
 
     public boolean isConnect()
     { 
         //System.out.println("Connected: " + properties[0]);
-        return (properties[0]);
+        return properties[0];
     }
 
     public boolean isCyclic()
@@ -165,21 +207,35 @@ public class Program1
 
     public static void main(String[] args)
     {
-       
-        // Creating objects
-        Program1 program = new Program1("somegraph.dat");
         Scanner input = new Scanner(System.in);
+
+        System.out.println("Welcome! This program will display some information about a graph. \nPlease input the name of a data file that contains an adjacency list:");
+        String file = input.nextLine();
+
+        Program1 program = new Program1(file);
 
         // Asking user for root if adjList is a tree
         if (program.isTree())
         {
-	        System.out.println("\n\nThis graph is a tree. What is the root node?");
+	        System.out.println("\n\nThis graph is a tree and is two-colorable. What is the root node?");
 	        int root = input.nextInt();
             program.breadthFirst(root);
 	    }
         else
         {
-            System.out.println("This program is NOT a tree.");
+            System.out.println("\nThis graph is NOT a tree.");
+            if (program.isTwoColor())
+            {
+                System.out.println("This graph is two-colorable.");
+
+            }
+
+            else
+            {
+                System.out.println("This graph is NOT two-colorable.");
+            }
+            
+
 
         }
     }

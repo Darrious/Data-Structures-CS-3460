@@ -100,7 +100,7 @@ public class AdjacencyLists
         
         if (y >= order() || x >= order())
         {
-            throw new IndexOutOfBoundsException("Invalid Index");
+            throw new IndexOutOfBoundsException("ERROR: Make sure the number of vertices in your file is correct.");
         
         }
 
