@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * AdjacencyLists.
  * 
- * @author Darrious
+ * @author Darrious Barger
  * @version 1
  * 
  */
@@ -171,6 +171,16 @@ public class AdjacencyLists
     public int size()
     {
         return edges;
+    }
+
+    /**
+     * Accessor method for if the graph is directed or not
+     *
+     * @return if graph is directed
+     */
+    public boolean status()
+    {
+        return status;
     }
 
 

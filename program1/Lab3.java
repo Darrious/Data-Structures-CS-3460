@@ -7,11 +7,12 @@ import java.io.File;
 /**
  * Test
  *
- * @author Darrious
+ * @author Darrious Barger
  * @version 1
  */
 public class Lab3
 {
+
 
     /**
      * Accepts a file name as an argument.
@@ -28,10 +29,17 @@ public class Lab3
         int edgeCount = 0;
         Scanner pairs = new Scanner(System.in);     // We will use this scanner to read the file
         AdjacencyLists list;                        // We will return this list
+        File file = null; 
         
+         
         try
         {
-            File file = new File(fileName);
+            file = new File(fileName);
+
+
+            System.out.println("Exists: " + file.exists());
+            System.out.println("Readable: " + file.canRead());
+           
             pairs = new Scanner(file);
             
             vertNum = pairs.nextInt(); //First int in the file assigned to vertNum
@@ -46,7 +54,8 @@ public class Lab3
         catch (Exception e)
         {
             System.out.println("ERROR: Make sure the file name/path are valid.");
-
+            e.printStackTrace();
+            pairs.close();
         }
 
         list = new AdjacencyLists(vertNum, dir); // Create adjacency list using variables
