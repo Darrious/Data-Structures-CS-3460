@@ -1,0 +1,1 @@
+To run the program enter java Lab5 <name of java file>.
