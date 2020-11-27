@@ -12,13 +12,16 @@ public class TSP
 {
 	private int[][] cordinates;
 	private double[][] distances;
+	private boolean[] visitedTour1;
+	private int numToVisit;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param fileName name of file containing cords
+	 * @param n number of cities to visit
 	 */
-	public TSP(String fileName)
+	public TSP(String fileName, int n)
 	{
 		try
 		{
@@ -30,11 +33,13 @@ public class TSP
 			int numCities = fileScan.nextInt();
 			int i = 0;
 
+			numToVisit = n;
 			cordinates = new int[numCities][2];
 			distances = new double[numCities][numCities];
-
+			visitedTour1 = new boolean[numCities];
 			readCords(fileScan);
 			calculateDistances();
+			findTour();
 
 		}
 
@@ -52,6 +57,73 @@ public class TSP
 		}
 		
 	}
+
+	public void findTour()
+	{
+		// Find cities with shortest distance
+		int shorti = 0;
+		int shortj = 0;
+		double shortest = distances[0][1];
+
+		// These loops find the cities with the shortest distance between them
+		System.out.println("\n\nDistances\n----------");
+		for (int i = 0; i < distances.length; i++)
+		{
+			for (int j = 0; j < distances[0].length; j++)
+			{
+				System.out.println(i +"-->"+ j + " | " + distances[i][j]);
+				if (distances[i][j] < shortest && i!=j)
+				{
+					shortest = distances[i][j];
+					shorti = i;
+					shortj = j;
+				}
+			}
+		}
+
+		//System.out.println("SHORTEST: " + shortest);
+
+		int i=0;
+		int currentCity = shortj;
+		int firstCity = shorti;
+		visitedTour1[shorti] = true;
+		double tourLength = distances[shorti][shortj];
+		
+
+
+		// We start on the cities with the shortest distance. Then use an algorithm to find the shortest to the next city
+		while (i < numToVisit-1)
+		{	
+
+			System.out.println( "\n"+(i+1) + ". CITY " + shorti + "-->" + shortj + " | DISTANCE: "+distances[shorti][shortj] +"\n");
+			shortest = distances[currentCity][0];
+			visitedTour1[shortj] = true;
+			tourLength += distances[shorti][shortj];
+			currentCity = shortj;
+
+			for (int j = 0; j < distances.length; j++)
+			{
+				//System.out.println("OPTIONS & j: " + distances[currentCity][j] + " " + j);
+				if (distances[currentCity][j] < shortest && visitedTour1[j] != true && currentCity != j)
+				{
+
+					shortest = distances[currentCity][j];
+					shorti = currentCity;
+					shortj = j;
+					
+					//System.out.println("SHORTEST: " + shortest);
+				} 
+			}
+
+			
+			i++;
+		}
+
+		System.out.println("\n" + numToVisit + ". CITY " + currentCity + "-->" + firstCity + " | DISTANCE: "+distances[shorti][shortj]+ "\n");
+		System.out.println("TOUR TOTAL: " + tourLength );
+
+	}
+
 
 	/**
 	 * readCords
@@ -72,7 +144,7 @@ public class TSP
 				cordinates[i][0] = fileScan.nextInt();
 				cordinates[i][1] = fileScan.nextInt();
 
-				System.out.println(cordinates[i][0] + " " + cordinates[i][1]);
+				System.out.println(i+". " + cordinates[i][0] + " " + cordinates[i][1]);
 				i++;
 			}
 
@@ -117,8 +189,8 @@ public class TSP
 	 */
 	public static void main(String[] args)
 	{	
-		String fileName = "./test-files/uscaps2.dat";
-		TSP t = new TSP(fileName);
+		String fileName = "./test-files/city3.dat";
+		TSP t = new TSP(fileName, 26);
 
 	}
 }
