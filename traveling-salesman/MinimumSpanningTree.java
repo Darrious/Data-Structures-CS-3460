@@ -64,14 +64,14 @@ public class MinimumSpanningTree
 			}
 		}
 
-		// Print our result
+		/* Print our result
 		sets.print();
 		System.out.println("\nEdges Used:\n----------");
 		for (int i = 0; i < mst.size(); i++)
 		{
 			System.out.println(mst.get(i).getI() + "<-->" + mst.get(i).getJ() + " |  Weight:" + mst.get(i).getWeight());
 		}
-
+		*/
 		return mst;
 	}
 

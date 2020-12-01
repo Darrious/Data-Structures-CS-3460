@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.io.File;
 import java.util.ArrayList;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 /**
  * TSP
@@ -14,8 +15,10 @@ public class TSP
 	private int[][] cordinates;
 	private double[][] distances;
 	private MinimumSpanningTree msp;
+	private AdjacencyLists adjlist;
 	private ArrayList<Edge> minTree;
-	private int numToVisit;
+	private boolean[] visited;
+    private int numCities;
 
 	/**
 	 * Constructor
@@ -32,16 +35,27 @@ public class TSP
 			Scanner fileScan = new Scanner(file);
 
 			// First line of file is # of cities
-			int numCities = fileScan.nextInt();
+			int numC = fileScan.nextInt();
+			numCities = numC;
+
 			msp = new MinimumSpanningTree(numCities, (numCities*numCities)-numCities);
 
-	
+			visited = new boolean[numCities];
 			cordinates = new int[numCities][2];
 			distances = new double[numCities][numCities];
+
 			readCords(fileScan);
 			calculateDistances();
 
 			minTree = msp.kruskal();
+			initAdjList(minTree);
+			DFS dfs = new DFS();
+
+			ArrayList<Integer> dfsResults = dfs.dfs(adjlist, 0, numCities);
+			getTourResults(dfsResults);
+			
+			dfsResults = dfs.dfs(adjlist, numCities-1, numCities);
+			getTourResults(dfsResults);
 
 
 		}
@@ -61,6 +75,80 @@ public class TSP
 		}
 		
 	}
+	public void getTourResults(ArrayList<Integer> dfsResults)
+	{
+		double sum = 0;
+
+		System.out.println("\n\nBest tour\n----------");
+		for (int i = 0; i < dfsResults.size(); i++)
+		{
+
+			if (i+1 < dfsResults.size())
+			{					
+				int x = dfsResults.get(i);
+				int y = dfsResults.get(i+1);
+
+				sum += distances[x][y];
+
+				System.out.println(x + "->" + y + " | Weight: " + distances[x][y]);
+			}
+			else
+			{
+				int x = dfsResults.get(i);
+				int y = dfsResults.get(0);
+
+				sum += distances[x][y];
+				System.out.println(x + "->" + y + " | Weight: " + distances[x][y]);
+
+			}
+
+
+		}
+		System.out.println("Sum: " + sum);
+	}
+
+
+	public void initAdjList(ArrayList<Edge> mst)
+	{
+		adjlist = new AdjacencyLists(numCities);
+
+		for (int i = 0; i < mst.size(); i++)
+		{
+			adjlist.addEdge(mst.get(i).getI(), mst.get(i).getJ());
+		}
+		//printList(adjlist);
+
+	}
+	
+	/**
+     * Prints out list using AdjacencyLists neighborIterator function.
+     *
+     * @param list The adjacency list we initialized earlier using the input files int pairs.
+     *
+     *
+     */ 
+    public void printList(AdjacencyLists list)
+    {
+        Iterator<Integer> it; 
+        
+        for (int i = 0; i < list.order(); i++)
+        {
+            it = list.neighborIterator(i);
+            System.out.print("\n" + (i) + ": "); // Prints current vertex
+            
+            while (it.hasNext())
+            {
+                System.out.print(it.next() + " "); // Prints edges of current vertex
+
+            }
+            
+        }
+
+
+        System.out.println("\nThere are " + list.size() + " edges.");
+
+    }
+	
 
 	/**
 	 * readCords
@@ -81,7 +169,7 @@ public class TSP
 				cordinates[i][0] = fileScan.nextInt();
 				cordinates[i][1] = fileScan.nextInt();
 
-				System.out.println(i+". " + cordinates[i][0] + " " + cordinates[i][1]);
+				//System.out.println(i+". " + cordinates[i][0] + " " + cordinates[i][1]);
 				i++;
 			}
 
@@ -114,7 +202,7 @@ public class TSP
 				distances[i][j] = Math.sqrt((xi-xj)*(xi-xj) + (yi-yj)*(yi-yj));
 				if (i != j) msp.addEdge(i, j, (int)distances[i][j]);
 
-				System.out.println(i + " " + j + " " + distances[i][j]);
+				//System.out.println(i + " " + j + " " + distances[i][j]);
 			}	
 		}
 
@@ -128,8 +216,7 @@ public class TSP
 	 */
 	public static void main(String[] args)
 	{	
-		String fileName = "./test-files/city1.dat";
+		String fileName = "./test-files/uscaps1.dat";
 		TSP t = new TSP(fileName);
-
 	}
 }
