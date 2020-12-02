@@ -6,9 +6,12 @@ import java.util.Iterator;
 
 /**
  * TSP
- *
+ * This class implements an attempted solution to the traveling salesman problem.
+ * I produce a minimum spanning tree using the cordinates and distances of graph. 
+ * From the MSP, I get the preorder traversal and use this as the best tour.
+ * 
  * @author Darrious Barger
- * @version Darrious Barger
+ * @version 1
  */
 public class TSP
 {
@@ -17,7 +20,6 @@ public class TSP
 	private MinimumSpanningTree msp;
 	private AdjacencyLists adjlist;
 	private ArrayList<Edge> minTree;
-	private boolean[] visited;
     private int numCities;
 
 	/**
@@ -38,26 +40,28 @@ public class TSP
 			int numC = fileScan.nextInt();
 			numCities = numC;
 
+            // Initialize MinimumSpanningTree
 			msp = new MinimumSpanningTree(numCities, (numCities*numCities)-numCities);
 
-			visited = new boolean[numCities];
 			cordinates = new int[numCities][2];
 			distances = new double[numCities][numCities];
 
-			readCords(fileScan);
-			calculateDistances();
+			readCords(fileScan);       // Read cordinates from file
+            calculateDistances();      // Calculate distances (weights) between cities (nodes)
+                                       // We also add these values to the MSP in this method
 
-			minTree = msp.kruskal();
-			initAdjList(minTree);
-			DFS dfs = new DFS();
-
+            minTree = msp.kruskal();   // Run kruskals algorithms on cordinates and weights to produce MSP
+			initAdjList(minTree);      // Add values from MSP to an adjacency list
+			DFS dfs = new DFS();       
+            
+            // Run a depth first search algorithm on the adjacency list
 			ArrayList<Integer> dfsResults = dfs.dfs(adjlist, 0, numCities);
-			getTourResults(dfsResults);
+			getTourResults(dfsResults); // Print preorder traversal of the minimum spanning tree startubg at node 0
 			
 			dfsResults = dfs.dfs(adjlist, numCities-1, numCities);
-			getTourResults(dfsResults);
-
-
+            getTourResults(dfsResults); // Print results starting at the last node
+            
+            fileScan.close();
 		}
 
         // Catch exceptios=ns
@@ -74,15 +78,21 @@ public class TSP
 			System.exit(0);
 		}
 		
-	}
+    }
+    
+    /**
+     * getTourResults
+     * Takes the preorder traversal of the minimum spanning tree and prints it. This is the optimal tour we have chosen.
+     * 
+     * @param dfsResults results of a depth first search (preorder traversal)
+     */
 	public void getTourResults(ArrayList<Integer> dfsResults)
 	{
 		double sum = 0;
 
 		System.out.println("\n\nBest tour\n----------");
 		for (int i = 0; i < dfsResults.size(); i++)
-		{
-
+		{   
 			if (i+1 < dfsResults.size())
 			{					
 				int x = dfsResults.get(i);
@@ -101,13 +111,19 @@ public class TSP
 				System.out.println(x + "->" + y + " | Weight: " + distances[x][y]);
 
 			}
-
-
-		}
+        }
+        
 		System.out.println("Sum: " + sum);
 	}
 
 
+    /**
+     * initAdjList
+     * Initializes AdjacencyList with values from min spanning tree. The adjacency list is used in the depth
+     * first search. The min spanning tree is aquired from the cordinates and weights.
+     * 
+     * @param mst is the minimum spanning tree of the cities graph
+     */
 	public void initAdjList(ArrayList<Edge> mst)
 	{
 		adjlist = new AdjacencyLists(numCities);
@@ -121,11 +137,10 @@ public class TSP
 	}
 	
 	/**
+     * printList
      * Prints out list using AdjacencyLists neighborIterator function.
      *
      * @param list The adjacency list we initialized earlier using the input files int pairs.
-     *
-     *
      */ 
     public void printList(AdjacencyLists list)
     {
@@ -144,9 +159,7 @@ public class TSP
             
         }
 
-
         System.out.println("\nThere are " + list.size() + " edges.");
-
     }
 	
 
@@ -159,7 +172,8 @@ public class TSP
 	 */
 	public void readCords(Scanner fileScan)
 	{
-		int i = 0;
+        int i = 0;
+        
 		// Reading in cordinates
 		while (fileScan.hasNext())
 		{
@@ -178,7 +192,6 @@ public class TSP
 				fileScan.nextLine();
 			}				
 		}
-
 	}
 	
 	/**
@@ -205,9 +218,7 @@ public class TSP
 				//System.out.println(i + " " + j + " " + distances[i][j]);
 			}	
 		}
-
 	}	
-
 
 	/**
 	 * Main
@@ -216,7 +227,14 @@ public class TSP
 	 */
 	public static void main(String[] args)
 	{	
-		String fileName = "./test-files/uscaps1.dat";
-		TSP t = new TSP(fileName);
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("\n\nPlease enter a file name containing cordinates..");
+        System.out.println("This program will attempt to find two of the best tours:");
+        String fileName = input.nextLine();
+        
+        new TSP(fileName);
+        
+        input.close();
 	}
 }

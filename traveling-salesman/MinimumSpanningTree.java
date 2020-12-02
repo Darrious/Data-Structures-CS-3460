@@ -1,8 +1,5 @@
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
-import java.io.File;
-
 
 /**
  * MinimumSpanningTree
@@ -13,7 +10,7 @@ import java.io.File;
 public class MinimumSpanningTree
 {
 	private DisjointSets sets;
-	private ArrayList<Edge> edgeList;
+    private ArrayList<Edge> edgeList;
 	private int verts;
 
 	/** Constructor that reads a file of edges and weights and 
@@ -24,8 +21,6 @@ public class MinimumSpanningTree
 	public MinimumSpanningTree(int v, int e)
 	{
 		verts = v;
-		int edges = e;
-
 		edgeList = new ArrayList<Edge>();		
 	}
 
@@ -74,6 +69,4 @@ public class MinimumSpanningTree
 		*/
 		return mst;
 	}
-
-
 }

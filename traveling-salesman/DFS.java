@@ -1,13 +1,10 @@
 
-import java.util.Queue;
-import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Iterator;
 
 
 /**
- * Program1
+ * DFS
  *
  * @author Darrious Barger
  * @version 1
@@ -48,8 +45,5 @@ public class DFS
 
         boolean visited[] = new boolean[i];
         return dfsUtil(root, visited);
-
-    }
-
-    
+    }  
 }

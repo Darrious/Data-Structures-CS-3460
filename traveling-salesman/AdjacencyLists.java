@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.io.File;
 
-
-
 /**
  * AdjacencyLists.
  * 
@@ -15,14 +13,14 @@ import java.io.File;
  */
 public class AdjacencyLists 
 {
-     private ArrayList<LinkedList<Integer>> adjList;
-     private boolean status;
-     private int edges; 
-
-
+    private ArrayList<LinkedList<Integer>> adjList;
+    private boolean status;
+    private int edges; 
  
     public AdjacencyLists(String fileName)
     {
+        edges = 0;
+
         ListFunctions lf = new ListFunctions();
         lf.initList(fileName);
     }
@@ -41,7 +39,7 @@ public class AdjacencyLists
     {
         adjList = new ArrayList<LinkedList<Integer>>(order);
         status = false;
-
+        edges = 0;
 
         for (int i = 0; i < order; i++)
         {
@@ -49,7 +47,6 @@ public class AdjacencyLists
             adjList.add(row);
 
         }
-
     }
 
     /**
@@ -74,12 +71,8 @@ public class AdjacencyLists
             LinkedList<Integer> row = new LinkedList<Integer>();
             adjList.add(row);
         }
-
-
-
     }
    
-
     /**
      * Adds an edge x, y to the graph. 
      * 
@@ -104,20 +97,17 @@ public class AdjacencyLists
         
         }
 
-        
         edges++; // Increment edges
+
         if (status)
         {
              adjList.get(x).add(y); // If directed
         }
         else 
         {
-
             adjList.get(x).add(y); // If undirected
             adjList.get(y).add(x);
-
         } 
-
     }
 
     /**
@@ -137,6 +127,13 @@ public class AdjacencyLists
         return it;
     }
 
+    /**
+     * getVertexList
+     *  Gets list of adjacent vertices
+     * 
+     * @param vert is the vertice
+     * @return a LinkedList of adjacent vertices
+     */
     public LinkedList<Integer> getVertexList(int vert)
     {
         try
@@ -149,8 +146,6 @@ public class AdjacencyLists
             System.out.println("ERROR");
             return null;
         }
-
-
     }
 
     /**
@@ -183,9 +178,8 @@ public class AdjacencyLists
         return status;
     }
 
-
      /**
-     * Test
+     * ListFunctions
      *
      * @author Darrious
      * @version 1
@@ -205,57 +199,59 @@ public class AdjacencyLists
             // Variable
             Boolean dir = false;                        // Directed or undirected
             int vertNum = 0;                            // Number of vertices
-            int edgeCount = 0;
-            Scanner pairs = new Scanner(System.in);     // We will use this scanner to read the file
+            Scanner pairs = null;                       // We will use this scanner to read the file
             AdjacencyLists list;                        // We will return this list
         
             try
             {
+                // Open file
                 File file = new File(fileName);
                 pairs = new Scanner(file);
-                
+
                 vertNum = pairs.nextInt(); //First int in the file assigned to vertNum
                 
                 if (pairs.nextInt() == 1)
                 {
                     dir = true; // If second int in file is 1, dir is true
                 }
-                  
+
+                list = new AdjacencyLists(vertNum, dir); // Create adjacency list using variables
+
+                // This loop adds all int pairs to the adjacency list. Exits when it finds (-1, -1)
+                int i = 0;
+                int j = 0;        
+                
+                while (true)
+                {
+                    i = pairs.nextInt();
+                    j = pairs.nextInt();
+                        
+                    if (i == -1 && j == -1)
+                    {
+                        break;
+                    }
+
+                    list.addEdge(i, j); 
+                }
+
+                return list;
             }
 
+            // Catch exceptions
             catch (Exception e)
             {
                 e.printStackTrace();
 
             }
 
-            list = new AdjacencyLists(vertNum, dir); // Create adjacency list using variables
-
-
-            // This loop adds all int pairs to the adjacency list. Exits when it finds (-1, -1)
-            int i = 0;
-            int j = 0;        
-            
-            while (true)
+            // Close file
+            finally
             {
-                i = pairs.nextInt();
-                j = pairs.nextInt();
-                    
-                if (i == -1 && j == -1)
-                {
-                    break;
-                }
-
-                list.addEdge(i, j);
-                
+                pairs.close();
             }
-
-
-            return list;
-
-        }
-       
-       
+            
+            return null;
+        }     
     }
 }  
 
